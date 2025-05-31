@@ -13,6 +13,11 @@ public class Rotate : MonoBehaviour
     // 旋转持续时间（秒）
     public float duration = 0.5f;
 
+    // 调焦参数
+    public float minDistance = 2f;   // 最小距离
+    public float maxDistance = 20f;  // 最大距离
+    public float zoomSpeed = 5f;     // 缩放速度
+
     private bool isRotating = false;
 
     void Update()
@@ -21,13 +26,27 @@ public class Rotate : MonoBehaviour
         {
             StartCoroutine(RotateAroundPoint());
         }
+
+        // 鼠标滚轮调焦
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (Mathf.Abs(scroll) > 0.01f)
+        {
+            Zoom(scroll);
+        }
+    }
+
+    void Zoom(float scroll)
+    {
+        Vector3 direction = (transform.position - rotateCenter).normalized;
+        float currentDistance = Vector3.Distance(transform.position, rotateCenter);
+        float targetDistance = Mathf.Clamp(currentDistance - scroll * zoomSpeed, minDistance, maxDistance);
+        transform.position = rotateCenter + direction * targetDistance;
     }
 
     IEnumerator RotateAroundPoint()
     {
         isRotating = true;
         float rotated = 0f;
-        //float lastAngle = 0f;
         while (rotated < rotateAngle)
         {
             float step = (Time.deltaTime / duration) * rotateAngle;
