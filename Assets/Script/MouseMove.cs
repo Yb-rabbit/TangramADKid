@@ -15,7 +15,7 @@ public class MouseMove : MonoBehaviour
     private Vector3 mouseOffset;
 
     private int rotateStep = 0;
-    private const int totalSteps = 4;
+    private const int totalSteps = 8;
 
     // 记录当前正反面（true为正面，false为反面）
     private bool isFront = true;
@@ -87,7 +87,7 @@ public class MouseMove : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.T) && !isRotating)
             {
                 rotateStep = (rotateStep + 1) % totalSteps;
-                float yAngle = 90f * rotateStep;
+                float yAngle = 45f * rotateStep;
                 float xAngle = isFront ? -90f : 90f;
                 targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
                 isRotating = true;
@@ -98,7 +98,7 @@ public class MouseMove : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Y) && !isRotating)
             {
                 isFront = !isFront;
-                float yAngle = 90f * rotateStep;
+                float yAngle = 45f * rotateStep;
                 float xAngle = isFront ? -90f : 90f;
                 targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
                 isRotating = true;
