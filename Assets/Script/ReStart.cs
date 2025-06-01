@@ -15,17 +15,23 @@ public class ReStart : MonoBehaviour
     {
         if (Input.GetKeyDown(resetKey))
         {
-            // 取消激活指定物体组
-            if (objectsToDeactivate != null)
-            {
-                foreach (var obj in objectsToDeactivate)
-                {
-                    if (obj != null)
-                        obj.SetActive(false);
-                }
-            }
-            // 重新加载当前场景
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            RestartScene();
         }
+    }
+
+    // 可通过按钮调用
+    public void RestartScene()
+    {
+        // 取消激活指定物体组
+        if (objectsToDeactivate != null)
+        {
+            foreach (var obj in objectsToDeactivate)
+            {
+                if (obj != null)
+                    obj.SetActive(false);
+            }
+        }
+        // 重新加载当前场景
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

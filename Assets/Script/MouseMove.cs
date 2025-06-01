@@ -5,18 +5,35 @@ using UnityEngine;
 public class MouseMove : MonoBehaviour
 {
     public float moveY = 2f;
+    public float rotateDuration = 0.3f; // 旋转持续时间（秒）
 
-    private static MouseMove currentSelected = null; // 静态变量，记录当前选中的物体
+    private static MouseMove currentSelected = null;
 
     private bool isSelected = false;
     private Vector3 originalPosition;
     private Camera mainCamera;
     private Vector3 mouseOffset;
 
+    private int rotateStep = 0;
+    private const int totalSteps = 4;
+
+    // 记录当前正反面（true为正面，false为反面）
+    private bool isFront = true;
+
+    // 平滑旋转相关
+    private Quaternion targetRotation;
+    private bool isRotating = false;
+    private float rotateTimer = 0f;
+
     void Start()
     {
         mainCamera = Camera.main;
         originalPosition = transform.position;
+        targetRotation = transform.rotation;
+
+        // 判断初始正反面
+        float x = Mathf.Round(transform.rotation.eulerAngles.x);
+        isFront = Mathf.Approximately(x, 270f) || Mathf.Approximately(x, -90f);
     }
 
     void Update()
@@ -30,7 +47,6 @@ public class MouseMove : MonoBehaviour
                 {
                     if (!isSelected)
                     {
-                        // 取消之前选中的物体
                         if (currentSelected != null && currentSelected != this)
                         {
                             currentSelected.Deselect();
@@ -66,13 +82,47 @@ public class MouseMove : MonoBehaviour
                 Vector3 targetPos = hitPoint - mouseOffset;
                 transform.position = new Vector3(targetPos.x, originalPosition.y + moveY, targetPos.z);
             }
+
+            // 按T键，y轴分四份旋转
+            if (Input.GetKeyDown(KeyCode.T) && !isRotating)
+            {
+                rotateStep = (rotateStep + 1) % totalSteps;
+                float yAngle = 90f * rotateStep;
+                float xAngle = isFront ? -90f : 90f;
+                targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
+                isRotating = true;
+                rotateTimer = 0f;
+            }
+
+            // 按Y键，正反面切换（x轴-90<->90）
+            if (Input.GetKeyDown(KeyCode.Y) && !isRotating)
+            {
+                isFront = !isFront;
+                float yAngle = 90f * rotateStep;
+                float xAngle = isFront ? -90f : 90f;
+                targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
+                isRotating = true;
+                rotateTimer = 0f;
+            }
+        }
+
+        // 平滑旋转
+        if (isRotating)
+        {
+            rotateTimer += Time.deltaTime;
+            float t = Mathf.Clamp01(rotateTimer / rotateDuration);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, t);
+            if (t >= 1f)
+            {
+                transform.rotation = targetRotation;
+                isRotating = false;
+            }
         }
     }
 
-    // 取消选中并恢复y值
     public void Deselect()
     {
         isSelected = false;
-        transform.position = new Vector3(transform.position.x, originalPosition.y, transform.position.z);
+        // 不修改transform.position
     }
 }

@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MoveAble.unity
     guid: cb8a28b51d643894f85f2679afe555ad
+  - enabled: 1
+    path: Assets/Scenes/RotateAble.unity
+    guid: 811822cb8b46b9c47a1eab4db477c27f
   m_configObjects: {}

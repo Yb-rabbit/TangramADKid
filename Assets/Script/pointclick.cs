@@ -19,7 +19,7 @@ public class pointclick : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && audioSource != null)
+        if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && audioSource != null)
         {
             audioSource.Play();
         }

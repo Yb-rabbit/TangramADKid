@@ -24,7 +24,7 @@ public class Rotate : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1) && !isRotating)
         {
-            StartCoroutine(RotateAroundPoint());
+            RotateByButton();
         }
 
         // Êó±ê¹öÂÖµ÷½¹
@@ -32,6 +32,14 @@ public class Rotate : MonoBehaviour
         if (Mathf.Abs(scroll) > 0.01f)
         {
             Zoom(scroll);
+        }
+    }
+
+    public void RotateByButton()
+    {
+        if (!isRotating)
+        {
+            StartCoroutine(RotateAroundPoint());
         }
     }
 
