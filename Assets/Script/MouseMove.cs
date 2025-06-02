@@ -38,14 +38,15 @@ public class MouseMove : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!isSelected)
         {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            // 只有未选中时，才检测点击选中
+            if (Input.GetMouseButtonDown(0))
             {
-                if (hit.transform == transform)
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    if (!isSelected)
+                    if (hit.transform == transform)
                     {
                         if (currentSelected != null && currentSelected != this)
                         {
@@ -62,47 +63,51 @@ public class MouseMove : MonoBehaviour
                         }
                         transform.position = new Vector3(transform.position.x, transform.position.y + moveY, transform.position.z);
                     }
-                    else
-                    {
-                        isSelected = false;
-                        currentSelected = null;
-                        transform.position = new Vector3(transform.position.x, originalPosition.y, transform.position.z);
-                    }
                 }
             }
         }
-
-        if (isSelected)
+        else
         {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            Plane plane = new Plane(Vector3.up, new Vector3(0, originalPosition.y + moveY, 0));
-            if (plane.Raycast(ray, out float distance))
+            // 拖拽中，鼠标左键再次按下则放下
+            if (Input.GetMouseButtonDown(0))
             {
-                Vector3 hitPoint = ray.GetPoint(distance);
-                Vector3 targetPos = hitPoint - mouseOffset;
-                transform.position = new Vector3(targetPos.x, originalPosition.y + moveY, targetPos.z);
+                isSelected = false;
+                currentSelected = null;
+                transform.position = new Vector3(transform.position.x, originalPosition.y, transform.position.z);
             }
-
-            // 按T键，y轴分四份旋转
-            if (Input.GetKeyDown(KeyCode.T) && !isRotating)
+            else
             {
-                rotateStep = (rotateStep + 1) % totalSteps;
-                float yAngle = 45f * rotateStep;
-                float xAngle = isFront ? -90f : 90f;
-                targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
-                isRotating = true;
-                rotateTimer = 0f;
-            }
+                // 拖拽跟随鼠标
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                Plane plane = new Plane(Vector3.up, new Vector3(0, originalPosition.y + moveY, 0));
+                if (plane.Raycast(ray, out float distance))
+                {
+                    Vector3 hitPoint = ray.GetPoint(distance);
+                    Vector3 targetPos = hitPoint - mouseOffset;
+                    transform.position = new Vector3(targetPos.x, originalPosition.y + moveY, targetPos.z);
+                }
 
-            // 按Y键，正反面切换（x轴-90<->90）
-            if (Input.GetKeyDown(KeyCode.Y) && !isRotating)
-            {
-                isFront = !isFront;
-                float yAngle = 45f * rotateStep;
-                float xAngle = isFront ? -90f : 90f;
-                targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
-                isRotating = true;
-                rotateTimer = 0f;
+                // 按T键，y轴分八份旋转
+                if (Input.GetKeyDown(KeyCode.T) && !isRotating)
+                {
+                    rotateStep = (rotateStep + 1) % totalSteps;
+                    float yAngle = 45f * rotateStep;
+                    float xAngle = isFront ? -90f : 90f;
+                    targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
+                    isRotating = true;
+                    rotateTimer = 0f;
+                }
+
+                // 按Y键，正反面切换（x轴-90<->90）
+                if (Input.GetKeyDown(KeyCode.Y) && !isRotating)
+                {
+                    isFront = !isFront;
+                    float yAngle = 45f * rotateStep;
+                    float xAngle = isFront ? -90f : 90f;
+                    targetRotation = Quaternion.Euler(xAngle, yAngle, 0);
+                    isRotating = true;
+                    rotateTimer = 0f;
+                }
             }
         }
 
