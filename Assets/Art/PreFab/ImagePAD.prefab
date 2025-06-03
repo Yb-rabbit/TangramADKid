@@ -78,7 +78,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u6309R\u91CD\u7F6E   \u6309T\u65CB\u8F6C   \u6309Y\u7FFB\u9762   \u53F3\u952E\u5207\u6362\u89C6\u89D2 
+  m_Text: "ESC\u91CD\u7F6E   \u6309R\u65CB\u8F6C   \u6309Y\u7FFB\u9762   \u53F3\u952E\u5207\u6362\u89C6\u89D2 
     \u5DE6\u952E\u62FE\u53D6/\u653E\u4E0B  \u6EDA\u8F6E\u8C03\u7126"
 --- !u!1 &5833243976055080897
 GameObject:
@@ -97,7 +97,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &364904730198777830
 RectTransform:
   m_ObjectHideFlags: 0
@@ -105,7 +105,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5833243976055080897}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

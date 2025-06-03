@@ -88,7 +88,7 @@ public class MouseMove : MonoBehaviour
                 }
 
                 // 按T键，y轴分八份旋转
-                if (Input.GetKeyDown(KeyCode.T) && !isRotating)
+                if (Input.GetKeyDown(KeyCode.R) && !isRotating)
                 {
                     rotateStep = (rotateStep + 1) % totalSteps;
                     float yAngle = 45f * rotateStep;
