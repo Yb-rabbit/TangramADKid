@@ -2,28 +2,32 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float walkSpeed = 5.0f;
-    public float runSpeed = 8.0f;
-    public float jumpForce = 5.0f;
-    public float gravity = -9.81f;
-
+    public float moveSpeed = 5.0f; // 移动速度
     public float mouseSensitivity = 2.0f; // 鼠标灵敏度
     public Transform playerCamera; // 拖拽主摄像机到此
 
-    private float xRotation = 0f;
-    private float currentSpeed;
-    private Vector3 velocity;
-    private bool isGrounded;
-    private bool isRunning = false;
+    public float minFov = 30f; // 最小视野
+    public float maxFov = 90f; // 最大视野
+    public float fovStep = 5f; // 每次滚轮调整的步长
 
-    public Rigidbody rb;
+    [Header("是否允许移动，可通过UI按钮控制")]
+    public bool canMove = true; // 是否允许移动，Inspector可选
+
+    private float xRotation = 0f;
+    private Rigidbody rb;
+    private Camera cam;
 
     void Start()
     {
-        currentSpeed = walkSpeed;
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        Cursor.lockState = CursorLockMode.Locked; // 锁定鼠标
+        // 获取Camera组件
+        cam = playerCamera.GetComponent<Camera>();
+        if (cam == null)
+        {
+            Debug.LogWarning("playerCamera未挂载Camera组件，无法调整FOV");
+        }
+        //Cursor.lockState = CursorLockMode.Locked; // 锁定鼠标
     }
 
     void Update()
@@ -40,48 +44,41 @@ public class PlayerController : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-        // 移动
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-        Vector3 move = transform.right * x + transform.forward * z;
-
-        if (Input.GetKey(KeyCode.LeftShift))
+        // 移动（可选）
+        if (canMove)
         {
-            currentSpeed = runSpeed;
-            isRunning = true;
-        }
-        else
-        {
-            currentSpeed = walkSpeed;
-            isRunning = false;
+            float x = Input.GetAxis("Horizontal");
+            float z = Input.GetAxis("Vertical");
+            Vector3 move = transform.right * x + transform.forward * z;
+            rb.MovePosition(rb.position + move * moveSpeed * Time.deltaTime);
         }
 
-        if (isGrounded)
+        // 滚轮控制FOV
+        if (cam != null)
         {
-            if (Input.GetButtonDown("Jump"))
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (Mathf.Abs(scroll) > 0.01f)
             {
-                velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+                cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - scroll * fovStep * 10f, minFov, maxFov);
             }
         }
-
-        velocity.y += gravity * Time.deltaTime;
-        rb.MovePosition(rb.position + move * currentSpeed * Time.deltaTime);
-        rb.velocity = new Vector3(rb.velocity.x, velocity.y, rb.velocity.z);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    // UI按钮调用：允许移动
+    public void EnableMove()
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
+        canMove = true;
     }
 
-    private void OnCollisionExit(Collision collision)
+    // UI按钮调用：禁止移动
+    public void DisableMove()
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
+        canMove = false;
+    }
+
+    // UI按钮调用：切换移动状态
+    public void ToggleMove()
+    {
+        canMove = !canMove;
     }
 }
